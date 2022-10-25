@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MovieApp</string>
+    <string name="title_feature_favorite">Favorite</string>
+    <string name="title_feature_detail">Detail</string>
+    <string name="title_feature_home">Module Title</string>
+    <string name="title_feature_common_ui">Common Ui</string>
+</resources>
