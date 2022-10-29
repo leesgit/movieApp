@@ -20,7 +20,6 @@ data class Movie(
     val title: String,
     @SerializedName("vote_average")
     val voteAverage: Double,
-    @ColumnInfo
     var storedTime: Date = Date(),
     var favorite: Boolean = false
 )
