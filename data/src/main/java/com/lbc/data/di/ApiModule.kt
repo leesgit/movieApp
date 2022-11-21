@@ -49,7 +49,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideResourceRestAdapter(
+    fun provideRetrofit(
         okHttpClient: OkHttpClient,
         gson: Gson
     ): Retrofit {
@@ -62,7 +62,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideAuthService(restAdapter: Retrofit): MovieService {
+    fun provideMovieService(restAdapter: Retrofit): MovieService {
         return restAdapter.create(MovieService::class.java)
     }
 
