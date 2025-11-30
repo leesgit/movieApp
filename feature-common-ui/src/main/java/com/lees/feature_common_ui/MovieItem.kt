@@ -2,9 +2,10 @@ package com.lees.feature_common_ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +50,7 @@ fun MovieItem(
                 clickFavoriteMovie = clickFavoriteMovie
             )
         }
-        Divider(modifier = Modifier.padding(bottom = 10.dp))
+        HorizontalDivider(modifier = Modifier.padding(bottom = 10.dp))
         Row {
             Text(text = "개봉일 ${movie.releaseDate}")
         }

@@ -60,6 +60,7 @@ dependencies {
     implementation(project(":feature-favorite"))
     implementation(project(":feature-detail"))
     implementation(project(":core:ui"))
+    implementation(project(":core:designsystem"))
 
     // AndroidX
     implementation(libs.appcompat)
