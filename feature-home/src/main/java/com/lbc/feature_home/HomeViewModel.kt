@@ -4,13 +4,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.lbc.data.model.Movie
-import com.lbc.data.util.BaseViewModel
 import com.lbc.domain.favorite.AddFavoriteMovieUseCase
 import com.lbc.domain.favorite.DeleteFavoriteMovieUseCase
 import com.lbc.domain.favorite.GetFavoriteMoviesUseCase
 import com.lbc.domain.search.GetNowPlayingMoviesUseCase
+import com.lbc.movieapp.core.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,29 +20,39 @@ class HomeViewModel @Inject constructor(
     getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
     private val addFavoriteMovieUseCase: AddFavoriteMovieUseCase,
     private val deleteFavoriteMovieUseCase: DeleteFavoriteMovieUseCase
-
-) : BaseViewModel() {
+) : MviViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>() {
 
     val movies: Flow<PagingData<Movie>> =
         getNowPlayingMoviesUseCase().cachedIn(viewModelScope)
 
-    private val favoriteMovies = getFavoriteMoviesUseCase()
-
-    var favoriteIds = HashSet<Long>()
-
     init {
-        viewModelScope.launch {
-            favoriteMovies.collect { favoriteMovie ->
-                favoriteIds = favoriteMovie.map { it.id }.toHashSet()
+        observeFavorites(getFavoriteMoviesUseCase)
+    }
+
+    override fun createInitialState(): HomeContract.State = HomeContract.State()
+
+    override fun handleEvent(event: HomeContract.Event) {
+        when (event) {
+            is HomeContract.Event.OnMovieClick -> {
+                setEffect { HomeContract.Effect.NavigateToDetail(event.movieId) }
+            }
+            is HomeContract.Event.OnFavoriteClick -> {
+                toggleFavorite(event.movie)
             }
         }
     }
 
-    fun checkIsFavoriteMovie(id: Long): Boolean {
-        return favoriteIds.contains(id)
+    private fun observeFavorites(getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase) {
+        viewModelScope.launch {
+            getFavoriteMoviesUseCase().collect { favoriteMovies ->
+                setState {
+                    copy(favoriteIds = favoriteMovies.map { it.id }.toSet())
+                }
+            }
+        }
     }
 
-    fun clickFavorite(movie: Movie) {
+    private fun toggleFavorite(movie: Movie) {
         viewModelScope.launch {
             if (movie.favorite) {
                 addFavoriteMovieUseCase(movie)
@@ -52,9 +62,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun checkIsFavoriteMovie(id: Long): Boolean {
+        return currentState.favoriteIds.contains(id)
+    }
 }
-
-data class HomeUiState(
-    val moviePaging: List<Movie> = emptyList(),
-    val favoriteIds: HashSet<Long> = HashSet<Long>()
-)

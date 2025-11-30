@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":feature-home"))
     implementation(project(":feature-favorite"))
     implementation(project(":feature-detail"))
+    implementation(project(":core:ui"))
 
     // AndroidX
     implementation(libs.appcompat)
@@ -66,9 +67,7 @@ dependencies {
     implementation(libs.fragment.ktx)
     implementation(libs.window)
 
-    // Lifecycle
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.viewmodel.ktx)
+    // Lifecycle (provided by core:ui)
 
     // Navigation
     implementation(libs.navigation.ui.ktx)
@@ -92,7 +91,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.activity.compose)
     implementation(libs.constraintlayout.compose)
-    implementation(libs.bundles.lifecycle)
     implementation(libs.coil.compose)
     debugImplementation(libs.bundles.compose.debug)
 

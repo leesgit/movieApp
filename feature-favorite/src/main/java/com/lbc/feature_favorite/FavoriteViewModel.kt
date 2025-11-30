@@ -2,39 +2,50 @@ package com.lbc.feature_favorite
 
 import androidx.lifecycle.viewModelScope
 import com.lbc.data.model.Movie
-import com.lbc.data.util.BaseViewModel
 import com.lbc.domain.favorite.DeleteFavoriteMovieUseCase
 import com.lbc.domain.favorite.GetFavoriteMoviesUseCase
+import com.lbc.movieapp.core.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val favoriteMovieListUseCase: GetFavoriteMoviesUseCase,
+    private val getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
     private val deleteFavoriteMovieUseCase: DeleteFavoriteMovieUseCase
-) : BaseViewModel() {
-
-    private val _uiState = MutableStateFlow(FavoriteUiState())
-    val uiState: StateFlow<FavoriteUiState> get() = _uiState
+) : MviViewModel<FavoriteContract.State, FavoriteContract.Event, FavoriteContract.Effect>() {
 
     init {
-        viewModelScope.launch {
-            favoriteMovieListUseCase().collect { movies ->
-                _uiState.value = FavoriteUiState(favoriteMovies = movies)
+        observeFavorites()
+    }
+
+    override fun createInitialState(): FavoriteContract.State = FavoriteContract.State()
+
+    override fun handleEvent(event: FavoriteContract.Event) {
+        when (event) {
+            is FavoriteContract.Event.OnMovieClick -> {
+                setEffect { FavoriteContract.Effect.NavigateToDetail(event.movieId) }
+            }
+            is FavoriteContract.Event.OnDeleteClick -> {
+                deleteFavorite(event.movie)
             }
         }
     }
 
-
-    fun deleteFavorite(movie: Movie) {
+    private fun observeFavorites() {
         viewModelScope.launch {
-            deleteFavoriteMovieUseCase(movie)
-
+            getFavoriteMoviesUseCase().collect { movies ->
+                setState {
+                    copy(isLoading = false, favoriteMovies = movies)
+                }
+            }
         }
     }
 
-    data class FavoriteUiState(val favoriteMovies: List<Movie>? = null)
+    private fun deleteFavorite(movie: Movie) {
+        viewModelScope.launch {
+            deleteFavoriteMovieUseCase(movie)
+            setEffect { FavoriteContract.Effect.ShowUndoSnackbar(movie) }
+        }
+    }
 }

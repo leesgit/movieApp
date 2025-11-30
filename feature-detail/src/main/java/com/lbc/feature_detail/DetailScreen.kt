@@ -1,13 +1,17 @@
 package com.lbc.feature_detail
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -18,16 +22,34 @@ import com.lbc.data.model.Movie
 import com.lbc.data.util.BASE_IMAGE_URL
 
 @Composable
-fun DetailScreen(uiState: DetailViewModel.DetailUiState) {
+fun DetailScreen(uiState: DetailContract.State) {
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .padding(10.dp)
-            .verticalScroll(scrollState)
-    ) {
-        uiState.movie?.let {
-            MovieDetailView(it)
+    when {
+        uiState.isLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        uiState.error != null -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = uiState.error)
+            }
+        }
+        uiState.movie != null -> {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .verticalScroll(scrollState)
+            ) {
+                MovieDetailView(uiState.movie)
+            }
         }
     }
 }

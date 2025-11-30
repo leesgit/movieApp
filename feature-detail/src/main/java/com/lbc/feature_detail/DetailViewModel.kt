@@ -1,30 +1,53 @@
 package com.lbc.feature_detail
 
 import androidx.lifecycle.viewModelScope
-import com.lbc.data.model.Movie
-import com.lbc.data.util.BaseViewModel
-import com.lbc.data.util.data
+import com.lbc.data.util.RemoteResult
 import com.lbc.domain.search.GetDetailMovieUseCase
+import com.lbc.movieapp.core.ui.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getDetailMovieUseCase: GetDetailMovieUseCase
-) : BaseViewModel() {
+) : MviViewModel<DetailContract.State, DetailContract.Event, DetailContract.Effect>() {
 
-    private val _uiState = MutableStateFlow(DetailUiState())
-    val uiState: StateFlow<DetailUiState> get() = _uiState
+    override fun createInitialState(): DetailContract.State = DetailContract.State()
 
-    fun getDetailMovie(id: Long) {
-        viewModelScope.launch {
-            getDetailMovieUseCase(id).data?.let { movie ->
-                _uiState.update { it.copy(movie = movie) }
+    override fun handleEvent(event: DetailContract.Event) {
+        when (event) {
+            is DetailContract.Event.LoadMovie -> {
+                loadMovieDetail(event.movieId)
+            }
+            is DetailContract.Event.OnBackClick -> {
+                setEffect { DetailContract.Effect.NavigateBack }
             }
         }
     }
 
-    data class DetailUiState(val movie: Movie? = null)
+    private fun loadMovieDetail(movieId: Long) {
+        setState { copy(isLoading = true, error = null) }
+
+        viewModelScope.launch {
+            when (val result = getDetailMovieUseCase(movieId)) {
+                is RemoteResult.Success -> {
+                    setState {
+                        copy(isLoading = false, movie = result.data)
+                    }
+                }
+                is RemoteResult.Error -> {
+                    setState {
+                        copy(isLoading = false, error = result.message)
+                    }
+                    setEffect { DetailContract.Effect.ShowError(result.message) }
+                }
+                is RemoteResult.NotFound -> {
+                    setState {
+                        copy(isLoading = false, error = "Movie not found")
+                    }
+                }
+            }
+        }
+    }
 }

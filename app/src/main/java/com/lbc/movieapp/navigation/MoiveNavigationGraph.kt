@@ -10,8 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lbc.feature_detail.DetailRoute
+import com.lbc.feature_detail.DetailViewModel
 import com.lbc.feature_favorite.FavoriteRoute
+import com.lbc.feature_favorite.FavoriteViewModel
 import com.lbc.feature_home.HomeRoute
+import com.lbc.feature_home.HomeViewModel
 
 @Composable
 fun MovieNavGraph(
@@ -25,15 +28,17 @@ fun MovieNavGraph(
         modifier = modifier
     ) {
         composable(MovieDestinations.HOME_ROUTE) {
+            val viewModel: HomeViewModel = hiltViewModel()
             HomeRoute(
-                homeViewModel = hiltViewModel(),
+                homeViewModel = viewModel,
                 moveToDetail = MovieNavigationActions(navController).navigateToDetail,
             )
         }
 
         composable(MovieDestinations.FAVORITE_ROUTE) {
+            val viewModel: FavoriteViewModel = hiltViewModel()
             FavoriteRoute(
-                favoriteViewModel = hiltViewModel(),
+                favoriteViewModel = viewModel,
                 moveToDetail = MovieNavigationActions(navController).navigateToDetail,
             )
         }
@@ -47,8 +52,9 @@ fun MovieNavGraph(
             )
         ) { entry ->
             val id = entry.arguments!!.getLong("id", 0)
+            val viewModel: DetailViewModel = hiltViewModel()
             DetailRoute(
-                detailViewModel = hiltViewModel(),
+                detailViewModel = viewModel,
                 id = id
             )
         }

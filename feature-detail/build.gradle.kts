@@ -51,13 +51,13 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":core:ui"))
 
     // AndroidX
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
 
-    // Lifecycle
-    implementation(libs.bundles.lifecycle)
+    // Lifecycle (provided by core:ui)
 
     // Navigation
     implementation(libs.navigation.compose)

@@ -48,6 +48,9 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.bundles.compose.debug)
 
+    // Lifecycle (api for MviViewModel inheritance)
+    api(libs.bundles.lifecycle)
+
     // Coil
     implementation(libs.coil.compose)
 
