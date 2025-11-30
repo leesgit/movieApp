@@ -1,10 +1,11 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -12,11 +13,13 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 rootProject.name = "MovieApp"
-include ':app'
-include ':data'
-include ':domain'
-include ':feature-favorite'
-include ':feature-detail'
-include ':feature-home'
-include ':feature-common-ui'
+
+include(":app")
+include(":data")
+include(":domain")
+include(":feature-home")
+include(":feature-detail")
+include(":feature-favorite")
+include(":feature-common-ui")

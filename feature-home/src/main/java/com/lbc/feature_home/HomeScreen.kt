@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.items
 import com.lbc.data.model.Movie
 import com.lees.feature_common_ui.MovieItem
 
@@ -24,7 +23,11 @@ fun HomeScreen(
 
     Column {
         LazyColumn(state = listState) {
-            items(movies) { movie ->
+            items(
+                count = movies.itemCount,
+                key = { index -> movies[index]?.id ?: index }
+            ) { index ->
+                val movie = movies[index]
                 movie?.let {
                     Card(
                         modifier = Modifier.padding(4.dp),
